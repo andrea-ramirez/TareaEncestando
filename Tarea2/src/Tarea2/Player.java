@@ -38,33 +38,32 @@ public class Player extends Item{
     @Override
     public void tick() {
         
-        // moving player depending on flags
-        if (game.getKeyManager().up) {
-           setY((getY() - 1)*direction);
-        }
-        if (game.getKeyManager().down) {
-           setY((getY() + 1)*direction);
-        }
-        if (game.getKeyManager().left) {
-           setX((getX() - 1)*direction);
-        }
-        if (game.getKeyManager().right) {
-           setX((getX() + 1)*direction);
-        }
         
+        if(game.getMouseManager().buttonDown(1)){
+            setX(game.getMouseManager().getX());
+            if(game.getMouseManager().getX()<(game.getWidth()/6)){
+                int sp = -1*(game.getMouseManager().getX()-(game.getWidth()/6));
+                game.setSpeed(sp);
+            }
+            else{
+                game.speed=0;
+            }
+            setY(game.getMouseManager().getY());
+        }
+        if(game.speed>0){
+            setX(x+=(game.speed/10));
+        }
         // reset x position and y position if colision with wall
         //right
         if (getX() + 60 >= game.getWidth()) {
+            game.speed=0;
             setX(game.getWidth() - 60);
             //wall = true;
             
         }//left
-        else if (getX() <= -30) {
-            setX(-30);
-            //wall = true;
-            setDirection(0);
-        }
+      
         if (getY() + 80 >= game.getHeight()) {
+            
             setY(game.getHeight() - 80);
             //wall = true;
         }

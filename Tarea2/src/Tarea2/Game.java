@@ -5,6 +5,8 @@
  */
 package Tarea2;
 
+import static com.sun.java.accessibility.util.AWTEventMonitor.addMouseListener;
+import static com.sun.java.accessibility.util.AWTEventMonitor.addMouseMotionListener;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
 import java.util.LinkedList;
@@ -24,9 +26,11 @@ public class Game implements Runnable {
     private Thread thread;          // thread to create the game
     private boolean running;        // to set the game
     private Player player;          // to use a player
-    private LinkedList <Star> lista; //to use a list of stars
+    private LinkedList <Star> lista;
+    public int speed=0;//to use a list of stars
 
     private KeyManager keyManager;  // to manage the keyboard
+    private MouseManager mouseManager;
    
     
     /**
@@ -41,6 +45,8 @@ public class Game implements Runnable {
         this.height = height;
         running = false;
         keyManager = new KeyManager();
+        mouseManager = new MouseManager();
+        
     }
 
     public Player getPlayer() {
@@ -63,6 +69,10 @@ public class Game implements Runnable {
         return height;
     }
     
+    public void setSpeed(int sp){
+        speed=sp;
+    }
+    
     /**
      * initializing the display window of the game
      */
@@ -72,6 +82,8 @@ public class Game implements Runnable {
          int azar = ((int) Math.random() * 6) + 3;
          player = new Player(0, getHeight() - 100, 1, 100, 100, this);
          display.getJframe().addKeyListener(keyManager);
+         display.getCanvas().addMouseListener(mouseManager);
+         display.getCanvas().addMouseMotionListener(mouseManager);
          lista = new LinkedList <Star>();
          for(int i= 1; i<= 10; i++){
              Star star = new Star((int) (Math.random() * getWidth()), ((int) Math.random()*(-1*getHeight()/2 + 101))-100, 1, 100, 100, this);
@@ -125,8 +137,13 @@ public class Game implements Runnable {
         return keyManager;
     }
     
+    public MouseManager getMouseManager(){
+        return mouseManager;
+    }
+    
     private void tick() {
         keyManager.tick();
+        mouseManager.processInput();
         // avancing player with colision
         player.tick();
         
