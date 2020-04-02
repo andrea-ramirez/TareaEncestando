@@ -16,14 +16,19 @@ public class Player extends Item{
 
     private int direction;
     private Game game;
-    //private boolean wall;
-
+    private boolean suelto;
+    private int vel0;
+    private int x0;
+    private int y0;
+    long time;
     
     public Player(int x, int y, int direction, int width, int height, Game game) {
         super(x, y, width, height);
         this.direction = 1;
         this.game = game;
-        //this.wall = false;
+        this.suelto = false;
+        this.vel0 = 0;
+        this.time = System.nanoTime();
     }
 
     public int getDirection() {
@@ -38,40 +43,34 @@ public class Player extends Item{
     @Override
     public void tick() {
         
-        // moving player depending on flags
-        if (game.getKeyManager().up) {
-           setY((getY() - 1)*direction);
-        }
-        if (game.getKeyManager().down) {
-           setY((getY() + 1)*direction);
-        }
-        if (game.getKeyManager().left) {
-           setX((getX() - 1)*direction);
-        }
-        if (game.getKeyManager().right) {
-           setX((getX() + 1)*direction);
+        if(!suelto){
+            
+            if(game.getMouseManager().buttonDown(1)){
+                setX(game.getMouseManager().getX());
+                setY(game.getMouseManager().getY());
+                if(game.getMouseManager().getX()<(game.getWidth()/6)){
+                    int sp = -1*(game.getMouseManager().getX()-(game.getWidth()/6));
+                    game.setSpeed(sp);
+                    vel0 = sp/1000;
+                    x0 = getX();
+                    y0 = getY();
+                    if(game.getMouseManager().isReleased(1)){
+                        System.out.println("esta suelto");
+                        suelto = true;
+                        time = System.nanoTime();
+                    }
+                }
+            }
+
+        }else{
+            long now = (long) ((System.nanoTime() - time)/1000000);
+                
+            setX((int) (x0 + (vel0*(0.525322)*now)));
+            setY((int) (y0 - ((vel0*(0.850904)*now)-(4.905*now*now))));
+            System.out.println((getY()));
+            
         }
         
-        // reset x position and y position if colision with wall
-        //right
-        if (getX() + 60 >= game.getWidth()) {
-            setX(game.getWidth() - 60);
-            //wall = true;
-            
-        }//left
-        else if (getX() <= -30) {
-            setX(-30);
-            //wall = true;
-            setDirection(0);
-        }
-        if (getY() + 80 >= game.getHeight()) {
-            setY(game.getHeight() - 80);
-            //wall = true;
-        }
-        else if (getY() <= -20) {
-            setY(-20);
-            //wall = true;
-        }
 
         
     }
